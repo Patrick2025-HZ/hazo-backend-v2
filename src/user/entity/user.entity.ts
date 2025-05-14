@@ -21,6 +21,16 @@ export class user {
   @Column({ nullable: true })
   fullName: string;
 
+
+  @Column({ nullable: true })
+  userName:string;
+
+  @Column({ nullable: true })
+  phoneNumber:string;
+
+  @Column({ nullable: true })
+  dob:string
+
   @CreateDateColumn()
   createdAt: Date;
 
