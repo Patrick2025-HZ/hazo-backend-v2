@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 
 
 @Module({
@@ -16,7 +17,8 @@ import { AuthModule } from './auth/auth.module';
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: true,
   ssl: false, // Disable in production
-  }),AuthModule
+  }),AuthModule,
+  UserModule
 ],
   controllers: [AppController],
   providers: [AppService],
