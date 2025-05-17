@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+
 
 
 @Module({
@@ -16,11 +19,12 @@ import { UserModule } from './user/user.module';
   database: 'hazo',
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: true,
-  ssl: false, // Disable in production
+  ssl: false, 
   }),AuthModule,
-  UserModule
+  UserModule,
+  CloudinaryModule
 ],
-  controllers: [AppController],
+  controllers: [AppController, ],
   providers: [AppService],
 })
 export class AppModule {}

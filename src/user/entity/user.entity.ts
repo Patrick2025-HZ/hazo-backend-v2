@@ -31,10 +31,21 @@ export class user {
   @Column({ nullable: true })
   dob:string
 
+  @Column({ nullable: true })
+  profilePicUrl: string; 
+
+  @Column({default:false})
+  isDeleted:boolean
+
+  @Column({ nullable: true })
+  deletedAt: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+
 
 }

@@ -1,14 +1,22 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { user } from './entity/user.entity';
 import { Repository } from 'typeorm';
 import { success } from 'src/common/exception/success.exception';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { updateUserDTO } from './dto/user.dto';
 
 @Injectable()
 export class UserServices {
   constructor(
     @InjectRepository(user)
     private user: Repository<user>,
+    private cloudinary: CloudinaryService,
   ) {}
 
   async getUserDetailsById(user: any) {
@@ -16,12 +24,75 @@ export class UserServices {
       throw new NotFoundException('User not found');
     }
     const userDetails = await this.user.findOne({ where: { id: user.userId } });
-  
+
     if (!userDetails) {
       throw new NotFoundException('User details not found');
     }
-  
+    console.log(userDetails)
+
     return new success('User fetch successfully', { userDetails });
+  }
+
+
+  async updateUserProfile(
+    id: string,
+    data: updateUserDTO,
+    file: Express.Multer.File,
+  ) {
+    const existingUser = await this.user.findOne({ where: { id } });
+  
+    if (!existingUser) {
+      throw new NotFoundException("User does not exist");
+    }
+  
+    let profilePicture: string | undefined;
+  
+    if (file) {
+      const upload = await this.cloudinary.uploadImage(file);
+      profilePicture = upload.secure_url;
+    }
+  
+    // Filter out empty or undefined fields
+    const cleanedData = Object.fromEntries(
+      Object.entries(data).filter(
+        ([_, value]) => value !== undefined && value !== null && value !== ''
+      )
+    );
+  
+    const updatedUser = {
+      ...existingUser,
+      ...cleanedData,
+      ...(profilePicture && { profilePicUrl:profilePicture }),
+    };
+  
+    return this.user.save(updatedUser);
+  }
+
+
+  async deleteUser(user:any){
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const userDetails = await this.user.findOne({
+      where: { id: user.userId },
+    });
+    console.log(userDetails)
+
+    if (!userDetails) {
+      throw new NotFoundException('User not found');
+    }
+    console.log(userDetails)
+
+    const updatedUser = {
+      ...userDetails,          
+      isDeleted: true,         
+      deletedAt: new Date(),   
+    };
+   await this.user.save(userDetails);
+
+    return {
+      message: 'User soft deleted successfully',
+    };
   }
   
 }
