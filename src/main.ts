@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import 'crypto';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,7 +12,7 @@ async function bootstrap() {
   .setDescription('Your API description')
   .setVersion('1.0')
   .addServer('http://localhost:3000/', 'Local environment')
-  .addServer('https://staging.yourapi.com/', 'Staging')
+  .addServer('https://hazo-development.up.railway.app/', 'Staging')
   .addServer('https://production.yourapi.com/', 'Production')
   .addTag('Your API Tag')
   .addBearerAuth(
