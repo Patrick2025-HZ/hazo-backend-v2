@@ -6,6 +6,16 @@ import { UserModule } from './user/user.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import * as nodeCrypto from 'crypto';
+
+if (!global.crypto) {
+  (global as any).crypto = {};
+}
+
+if (!global.crypto.randomUUID) {
+  global.crypto.randomUUID = nodeCrypto.randomUUID.bind(nodeCrypto);
+}
+
 
 @Module({
   imports: [
