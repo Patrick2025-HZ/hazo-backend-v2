@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -13,6 +14,7 @@ import { otp } from './entity/otp.entity';
 import { user } from 'src/user/entity/user.entity';
 import { success } from 'src/common/exception/success.exception';
 import { otpService } from './otp.service';
+import { resetPasswordDTO } from './dto/reset_password.dto';
 
 @Injectable()
 export class AuthService {
@@ -48,8 +50,6 @@ export class AuthService {
     }
   }
 
-
-
   // login
   async login(email: string, password: string) {
       const user = await this.user.findOne({where:{email}});
@@ -57,6 +57,7 @@ export class AuthService {
         throw new NotFoundException("User doesnot exists")
       }
       const comparePassword = await bcrypt.compare(password, user?.password)
+
       if(!user || !comparePassword){
         throw new UnauthorizedException("Invalide Credentials")
       }
@@ -72,4 +73,43 @@ export class AuthService {
       }
       // const decodePassword = await bcrypt.compare(password)
   }
+
+//reset password
+  async resetPassword(dto: resetPasswordDTO) {
+    const userExists = await this.user.findOne({ where: { email: dto.email } });
+   
+  
+    if (!userExists) {
+      throw new NotFoundException("User does not exist with this email");
+    }
+  
+    const isCurrentPasswordCorrect = await bcrypt.compare(dto.current_password, userExists.password);
+  
+    if (!isCurrentPasswordCorrect) {
+      throw new BadRequestException("Incorrect current password");
+    }
+  
+    if (dto.reset_password !== dto.confirm_password) {
+      throw new BadRequestException("New passwords do not match");
+    }
+  
+    const isSameAsOld = await bcrypt.compare(dto.reset_password, userExists.password);
+    if (isSameAsOld) {
+      throw new BadRequestException("New password must be different from the old password");
+    }
+  
+    // Hash the new password before saving
+    const hashedPassword = await bcrypt.hash(dto.reset_password, 10);
+    userExists.password = hashedPassword;
+  
+    await this.user.save(userExists);
+
+    return {
+      message: 'Password updated successfully',
+
+    }
+  }
+  
 }
+
+

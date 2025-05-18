@@ -9,17 +9,33 @@ import { pending_user } from './entity/pending_user.entity';
 import { otp } from './entity/otp.entity';
 import { user } from 'src/user/entity/user.entity';
 import { otpService } from './otp.service';
+import { TokenBlocklistService } from './tokenBlockList.service';
+import { blockListTokenEntity } from './entity/blocklist.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([pending_user, otp, user]),
+    ConfigModule,
+    TypeOrmModule.forFeature([pending_user, otp, user, blockListTokenEntity]),
     PassportModule,
-    JwtModule.register({
-      secret: 'your_jwt_secret',
-      signOptions: { expiresIn: '1h' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const jwtSecret = configService.get<string>('JWT_SECRET');
+        const jwtExpireTime = configService.get<string>('JWT_EXPIRE_TIME');
+  
+        return {
+          secret: jwtSecret,
+          signOptions: {
+            expiresIn: jwtExpireTime,
+          },
+        };
+      },
     }),
   ],
-  providers: [AuthService, JwtStrategy, otpService],
-  controllers: [AuthController]
+  
+  providers: [AuthService, JwtStrategy, otpService, TokenBlocklistService],
+  controllers: [AuthController],
 })
 export class AuthModule {}

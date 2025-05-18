@@ -37,7 +37,8 @@ export class pending_user {
   @UpdateDateColumn()
   updatedAt: Date;
 
-
+  @Column({ default: false, nullable: false })
+  isActive: boolean;
 
   // relation
   @OneToOne(() => otp, (Otp) => Otp.pendingUserId, { cascade: true })

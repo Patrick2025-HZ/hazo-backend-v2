@@ -22,6 +22,8 @@ export class user {
   fullName: string;
 
 
+
+
   @Column({ nullable: true })
   userName:string;
 
@@ -39,6 +41,10 @@ export class user {
 
   @Column({ nullable: true })
   deletedAt: Date;
+
+  @Column({ default: true, nullable: false })
+  isActive: boolean;
+  
 
   @CreateDateColumn()
   createdAt: Date;
