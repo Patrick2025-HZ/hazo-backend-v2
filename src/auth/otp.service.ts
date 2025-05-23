@@ -4,7 +4,7 @@ import { otp } from './entity/otp.entity';
 import { Repository } from 'typeorm';
 import { pending_user } from './entity/pending_user.entity';
 import { success } from 'src/common/exception/success.exception';
-import { user } from 'src/user/entity/user.entity';
+import { User } from 'src/user/entity/user.entity';
 
 @Injectable()
 export class otpService {
@@ -15,8 +15,8 @@ export class otpService {
     @InjectRepository(pending_user)
     public pendingUser: Repository<pending_user>,
 
-    @InjectRepository(user)
-    public user:Repository<user>
+    @InjectRepository(User)
+    public user:Repository<User>
   ) {}
 
 

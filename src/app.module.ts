@@ -6,6 +6,7 @@ import { UserModule } from './user/user.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { PostsModule } from './posts/posts.module';
 import * as nodeCrypto from 'crypto';
 
 if (!global.crypto) {
@@ -45,6 +46,7 @@ if (!global.crypto.randomUUID) {
     AuthModule,
     UserModule,
     CloudinaryModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

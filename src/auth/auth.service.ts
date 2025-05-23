@@ -11,7 +11,7 @@ import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { otp } from './entity/otp.entity';
-import { user } from 'src/user/entity/user.entity';
+import { User } from 'src/user/entity/user.entity';
 import { success } from 'src/common/exception/success.exception';
 import { otpService } from './otp.service';
 import { resetPasswordDTO } from './dto/reset_password.dto';
@@ -23,8 +23,8 @@ export class AuthService {
     private pendingUser: Repository<pending_user>,
     @InjectRepository(otp)
     private otp: Repository<otp>,
-    @InjectRepository(user)
-    private user: Repository<user>,
+    @InjectRepository(User)
+    private user: Repository<User>,
     private jwtService: JwtService,
     private otpService:otpService
   ) {}

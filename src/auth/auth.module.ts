@@ -7,7 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { pending_user } from './entity/pending_user.entity';
 import { otp } from './entity/otp.entity';
-import { user } from 'src/user/entity/user.entity';
+import { User } from 'src/user/entity/user.entity';
 import { otpService } from './otp.service';
 import { TokenBlocklistService } from './tokenBlockList.service';
 import { blockListTokenEntity } from './entity/blocklist.entity';
@@ -16,7 +16,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule,
-    TypeOrmModule.forFeature([pending_user, otp, user, blockListTokenEntity]),
+    TypeOrmModule.forFeature([pending_user, otp, User, blockListTokenEntity]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

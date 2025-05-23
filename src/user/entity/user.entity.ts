@@ -1,14 +1,16 @@
+import { Post } from 'src/posts/entities/post.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class user {
+export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -53,5 +55,8 @@ export class user {
   updatedAt: Date;
 
 
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[]
 
 }

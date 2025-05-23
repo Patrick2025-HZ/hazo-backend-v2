@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { user } from './entity/user.entity';
+import { User } from './entity/user.entity';
 import { Repository } from 'typeorm';
 import { success } from 'src/common/exception/success.exception';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
@@ -14,8 +14,8 @@ import { updateUserDTO } from './dto/user.dto';
 @Injectable()
 export class UserServices {
   constructor(
-    @InjectRepository(user)
-    private user: Repository<user>,
+    @InjectRepository(User)
+    private user: Repository<User>,
     private cloudinary: CloudinaryService,
   ) {}
 
@@ -64,8 +64,13 @@ export class UserServices {
       ...cleanedData,
       ...(profilePicture && { profilePicUrl:profilePicture }),
     };
+
   
-    return this.user.save(updatedUser);
+    await this.user.update(id, updatedUser);
+
+    return {
+      message: 'User updated successfully successfully',
+    };
   }
 
 
