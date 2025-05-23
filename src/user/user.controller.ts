@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Req,
@@ -44,7 +45,7 @@ export class UserController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('profile'))
   updatedProfile(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() updateUserDto: updateUserDTO,
   ) {
