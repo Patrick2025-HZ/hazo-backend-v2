@@ -10,7 +10,6 @@ import { Repository } from 'typeorm';
 import { success } from 'src/common/exception/success.exception';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { updateUserDTO } from './dto/user.dto';
-import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 import { isUUID } from 'class-validator';
 
 @Injectable()
@@ -30,7 +29,7 @@ export class UserServices {
     if (!userDetails) {
       throw new NotFoundException('User details not found');
     }
-    console.log(userDetails);
+
 
     return new success('User fetch successfully', { userDetails });
   }
@@ -58,19 +57,13 @@ export class UserServices {
     }
 
     // Filter out empty or undefined fields
-    const cleanedData = Object.fromEntries(
-      Object.entries(data).filter(
-        ([_, value]) => value !== undefined && value !== null && value !== '',
-      ),
-    );
-
-    const updatedUser = {
-      ...existingUser,
-      ...cleanedData,
-      ...(profilePicture && { profilePicUrl: profilePicture }),
+    const updatePayload: Partial<typeof existingUser> = {
+      ...data,
+      ...(profilePicture ? { profilePicUrl: profilePicture } : {}),
     };
-
-    await this.user.update(id, updatedUser);
+  
+    await this.user.update(id, updatePayload);
+  
 
     return {
       message: 'User updated successfully successfully',
@@ -84,12 +77,10 @@ export class UserServices {
     const userDetails = await this.user.findOne({
       where: { id: user.userId },
     });
-    console.log(userDetails);
 
     if (!userDetails) {
       throw new NotFoundException('User not found');
     }
-    console.log(userDetails);
 
     const updatedUser = {
       ...userDetails,

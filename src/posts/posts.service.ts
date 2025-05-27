@@ -1,12 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/user/entity/user.entity';
+import { Repository } from 'typeorm';
+import { Post } from './entities/post.entity';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { is_reel } from './enums/is_reel.status.enum';
+import { success } from 'src/common/exception/success.exception';
 
 @Injectable()
 export class PostsService {
-  create(createPostDto: CreatePostDto) {
-    return 'This action adds a new post';
+  constructor(
+    @InjectRepository(User)
+    public user: Repository<User>,
+    private cloudinary: CloudinaryService,
+
+    @InjectRepository(Post)
+    public post: Repository<Post>,
+  ) {}
+  async create(createPostDto: CreatePostDto, file: Express.Multer.File, req) {
+    const userExists = await this.user.findOne({ where: { id: req.userId } });
+
+    if (!userExists) {
+      throw new BadRequestException('User does not founded');
+    }
+
+    if (file) {
+      const upload = await this.cloudinary.uploadImage(file);
+      const profilePicture = upload.secure_url;
+      console.log(profilePicture);
+
+      const newPost = await this.post.create({
+        caption: createPostDto.caption,
+        is_reel: createPostDto.is_reel,
+        media_url: profilePicture,
+        user: userExists,
+      });
+
+      const post = await this.post.save(newPost);
+      return new success('User fetch successfully', { post });
+    }
   }
+
+  async findAllReels(req) {}
 
   findAll() {
     return `This action returns all posts`;

@@ -10,14 +10,18 @@ if (!globalThis.crypto) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors({
+    origin: '*', 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+  const apiBaseURL = 'dev env'
 
   const options = new DocumentBuilder()
   .setTitle('Your API Title')
   .setDescription('Your API description')
   .setVersion('1.0')
-  .addServer('http://localhost:3000/', 'Local environment')
-  .addServer('https://hazo-development.up.railway.app/', 'Staging')
-  .addServer('https://production.yourapi.com/', 'Production')
+  .addServer(apiBaseURL ? 'https://hazo-dev.up.railway.app/' : 'http://localhost:3000/')
   .addTag('Your API Tag')
   .addBearerAuth(
     { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },

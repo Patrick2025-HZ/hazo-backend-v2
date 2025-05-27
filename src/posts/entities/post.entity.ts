@@ -1,20 +1,27 @@
-
-import { User } from "src/user/entity/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { User } from 'src/user/entity/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { is_reel } from '../enums/is_reel.status.enum';
 
 @Entity()
 export class Post {
-    @PrimaryGeneratedColumn('uuid')
-    id:string
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
+  @Column()
   caption: string;
 
   @Column()
   media_url: string;
 
   @Column()
-  is_reel: string;
+  is_reel: is_reel;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -24,6 +31,4 @@ export class Post {
 
   @ManyToOne(() => User, (user) => user.posts, { onDelete: 'CASCADE' })
   user: User;
-
-
 }
