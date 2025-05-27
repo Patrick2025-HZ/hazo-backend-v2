@@ -40,7 +40,7 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get protected data' })
   @ApiBearerAuth('access-token')
-  @Get('get-all-reels')
+  @Get('get-all-reels-and-posts')
   getAllReels(
    
     @Req() req:any
@@ -64,8 +64,8 @@ export class PostsController {
     return this.postsService.update(+id, updatePostDto);
   }
 
-  @Delete(':id')
+  @Delete('/delete/:id')
   remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
+    return this.postsService.remove(id);
   }
 }

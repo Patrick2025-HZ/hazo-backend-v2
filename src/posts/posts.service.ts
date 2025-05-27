@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -29,13 +29,13 @@ export class PostsService {
     if (file) {
       const upload = await this.cloudinary.uploadImage(file);
       const profilePicture = upload.secure_url;
-      console.log(profilePicture);
+  
 
       const newPost = await this.post.create({
         caption: createPostDto.caption,
         is_reel: createPostDto.is_reel,
         media_url: profilePicture,
-        user: userExists,
+        // user: userExists,
       });
 
       const post = await this.post.save(newPost);
@@ -43,8 +43,24 @@ export class PostsService {
     }
   }
 
-  async findAllReels(req) {}
+  async findAllReels(req) {
+    const reels = await this.post.find({
+      where: {
+        user: { id: req.user?.id },
+        is_reel: true, 
+      },
+    });
 
+    const feed = await this.post.find({
+      where: {
+        user: { id: req.user?.id },
+        is_reel: false, 
+      },
+    });
+  
+   return new success('Reels and Feeds fetch successfully', {feeds:feed, reels:reels})
+  }
+  
   findAll() {
     return `This action returns all posts`;
   }
@@ -57,7 +73,16 @@ export class PostsService {
     return `This action updates a #${id} post`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async remove(id: string) {
+    const postDetails = await this.post.findOne({ where: { id } });
+    if (!postDetails) {
+      throw new NotFoundException('No Record Found');
+    }
+    await this.post.delete(id);
+    
+    return {
+      message: 'Post deleted successfully',
+    };
   }
+  
 }

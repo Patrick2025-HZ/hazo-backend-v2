@@ -20,8 +20,8 @@ export class Post {
   @Column()
   media_url: string;
 
-  @Column()
-  is_reel: is_reel;
+  @Column({ type: 'boolean', default: false })
+  is_reel: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
