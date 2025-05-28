@@ -16,7 +16,7 @@ export class resetPasswordDTO {
       @ApiProperty({ example: 'Danyal@123' })
       @IsString()
       @MinLength(6)
-      reset_password: string;
+      new_password: string;
 
       @ApiProperty({ example: 'Danyal@123' })
       @IsString()

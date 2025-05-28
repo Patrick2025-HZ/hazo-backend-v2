@@ -5,18 +5,21 @@ import { Repository } from 'typeorm';
 import { pending_user } from './entity/pending_user.entity';
 import { success } from 'src/common/exception/success.exception';
 import { User } from 'src/user/entity/user.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class otpService {
   constructor(
     @InjectRepository(otp)
     public otp: Repository<otp>,
+     private jwtService: JwtService,
 
     @InjectRepository(pending_user)
     public pendingUser: Repository<pending_user>,
 
     @InjectRepository(User)
     public user:Repository<User>
+    
   ) {}
 
 
@@ -57,6 +60,11 @@ export class otpService {
     if (otp !== otpDetails.otpCode) {
       throw new UnauthorizedException('Invalid OTP');
     }
+
+    const token = this.jwtService.sign({
+      sub:userExists?.id,
+      email:userExists?.email
+    })
   
     const newUser = await this.user.create({
       email:userExists?.email,
@@ -69,7 +77,7 @@ export class otpService {
 
     await this.otp.delete({ id: otpDetails.id });
   
-    throw new success("OTP verified successfully", newUser)
+    throw new success("OTP verified successfully", {...newUser, token})
 
   }
   

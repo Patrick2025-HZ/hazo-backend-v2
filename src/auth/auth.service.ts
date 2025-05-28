@@ -89,17 +89,17 @@ export class AuthService {
       throw new BadRequestException("Incorrect current password");
     }
   
-    if (dto.reset_password !== dto.confirm_password) {
+    if (dto.new_password !== dto.confirm_password) {
       throw new BadRequestException("New passwords do not match");
     }
   
-    const isSameAsOld = await bcrypt.compare(dto.reset_password, userExists.password);
+    const isSameAsOld = await bcrypt.compare(dto.new_password, userExists.password);
     if (isSameAsOld) {
       throw new BadRequestException("New password must be different from the old password");
     }
   
     // Hash the new password before saving
-    const hashedPassword = await bcrypt.hash(dto.reset_password, 10);
+    const hashedPassword = await bcrypt.hash(dto.new_password, 10);
     userExists.password = hashedPassword;
   
     await this.user.save(userExists);
