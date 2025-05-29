@@ -15,7 +15,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
-  const apiBaseURL = false
+  const apiBaseURL = true
 
   const options = new DocumentBuilder()
   .setTitle('Your API Title')
