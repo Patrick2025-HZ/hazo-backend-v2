@@ -36,7 +36,7 @@ SwaggerModule.setup('api-docs', app, document);
     new ValidationPipe({
       transform: true, // Automatically transform the payload to the DTO class
       whitelist: true, // Strip properties that are not in the DTO
-      forbidNonWhitelisted: true, // Throw an error if extra properties are sent
+      forbidNonWhitelisted: false, // Throw an error if extra properties are sent
       disableErrorMessages: false, // Show detailed error messages
     }),
   );

@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
   ApiOperation,
   ApiTags,
@@ -39,11 +40,27 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get protected data' })
+  @ApiOperation({ summary: 'Update user profile' })
   @ApiBearerAuth('access-token')
   @Put('updateUser/:id')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('profile'))
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        userName: { type: 'string', example: 'Danyal Khursheed' },
+        email: { type: 'string', example: 'john@example.com' },
+        fullName: { type: 'string', example: 'Danyal Khursheed' },
+        phoneNumber: { type: 'string', example: '923498030357' },
+        dob: { type: 'string', example: '2024-12-12' },
+        profile: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   updatedProfile(
     @Param('id', new ParseUUIDPipe()) id: string,
     @UploadedFile() file: Express.Multer.File,
@@ -51,7 +68,7 @@ export class UserController {
   ) {
     return this.userServices.updateUserProfile(id, updateUserDto, file);
   }
-
+  
 
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get protected data' })

@@ -67,6 +67,8 @@ export class UserServices {
     const updatedUser = await this.user.findOne({ where: { id } });
     console.log('Updated user:', updatedUser);
   
+
+  
     return {
       message: 'User updated successfully',
       user :updatedUser
