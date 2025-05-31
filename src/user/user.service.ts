@@ -69,6 +69,7 @@ export class UserServices {
   
     return {
       message: 'User updated successfully',
+      user :updatedUser
     };
   }
 
