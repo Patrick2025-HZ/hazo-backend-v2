@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -29,7 +34,6 @@ export class PostsService {
     if (file) {
       const upload = await this.cloudinary.uploadImage(file);
       const profilePicture = upload.secure_url;
-  
 
       const newPost = await this.post.create({
         caption: createPostDto.caption,
@@ -47,30 +51,47 @@ export class PostsService {
     const reels = await this.post.find({
       where: {
         user: { id: req.user?.id },
-        is_reel: true, 
+        is_reel: true,
       },
     });
 
     const feed = await this.post.find({
       where: {
         user: { id: req.user?.id },
-        is_reel: false, 
+        is_reel: false,
       },
     });
-  
-   return new success('Reels and Feeds fetch successfully', {feeds:feed, reels:reels})
-  }
-  
-  findAll() {
-    return `This action returns all posts`;
+
+    return new success('Reels and Feeds fetch successfully', {
+      feeds: feed,
+      reels: reels,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
-  }
+  async update(id: string, caption: string) {
+    const post = await this.post.findOne({ where: { id } });
+  
+    if (!post) {
+      throw new NotFoundException('No Post Found');
+    }
+  
+  await this.post.update({ id }, { caption: caption });
+  
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  }
+  
+  async findOne(id: string) {
+    const postDetails = await this.post.findOne({ where: { id } });
+    if (!postDetails) {
+      throw new NotFoundException('No Record Found');
+    }
+
+    const feed = await this.post.find({
+      where: {
+        id,
+      },
+    });
+    return new success('Reels and Feeds fetch successfully', feed[0]);
   }
 
   async remove(id: string) {
@@ -79,10 +100,9 @@ export class PostsService {
       throw new NotFoundException('No Record Found');
     }
     await this.post.delete(id);
-    
+
     return {
       message: 'Post deleted successfully',
     };
   }
-  
 }

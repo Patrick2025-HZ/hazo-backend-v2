@@ -33,7 +33,6 @@ export class UserServices {
 
     return new success('User fetch successfully', { userDetails });
   }
-
   async updateUserProfile(
     id: string,
     data: updateUserDTO,
@@ -42,31 +41,34 @@ export class UserServices {
     if (!isUUID(id)) {
       throw new NotFoundException('User does not exist');
     }
-
+  
     const existingUser = await this.user.findOne({ where: { id } });
-
     if (!existingUser) {
       throw new NotFoundException('User does not exist');
     }
-
+  
     let profilePicture: string | undefined;
-
     if (file) {
       const upload = await this.cloudinary.uploadImage(file);
       profilePicture = upload.secure_url;
+      console.log('Cloudinary URL:', profilePicture);
     }
-
-    // Filter out empty or undefined fields
-    const updatePayload: Partial<typeof existingUser> = {
+  
+    const updatePayload = {
       ...data,
       ...(profilePicture ? { profilePicUrl: profilePicture } : {}),
     };
+    console.log('Update payload:', updatePayload);
   
-    await this.user.update(id, updatePayload);
+    const result = await this.user.update(id, updatePayload);
+    console.log('Update result:', result);
   
-
+    // Fetch the updated user to verify
+    const updatedUser = await this.user.findOne({ where: { id } });
+    console.log('Updated user:', updatedUser);
+  
     return {
-      message: 'User updated successfully successfully',
+      message: 'User updated successfully',
     };
   }
 

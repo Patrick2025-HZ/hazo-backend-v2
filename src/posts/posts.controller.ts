@@ -15,8 +15,9 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { ApiBearerAuth, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { updateUserDTO } from 'src/user/dto/user.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -37,6 +38,20 @@ export class PostsController {
     return this.postsService.create(createPostDto, file, req.user);
   }
 
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get protected data' })
+  @ApiBearerAuth('access-token')
+
+  @Post('update-post/:id')
+  update(
+    @Param('id') id:string,
+    @Body() body:UpdatePostDto
+  ){
+    return this.postsService.update(id, body.caption)
+  }
+
+
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get protected data' })
   @ApiBearerAuth('access-token')
@@ -49,20 +64,16 @@ export class PostsController {
     return this.postsService.findAllReels(req.user);
   }
 
-  @Get()
-  findAll() {
-    return this.postsService.findAll();
-  }
-
-  @Get(':id')
+ 
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get protected data' })
+  @ApiBearerAuth('access-token')
+  @Get('get-single-post/:id')
   findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+    return this.postsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(+id, updatePostDto);
-  }
+
 
   @Delete('/delete/:id')
   remove(@Param('id') id: string) {
