@@ -66,11 +66,12 @@ export class AuthService {
         email:user?.email
       })
       const { password: _removed, ...userWithoutPassword } = user;
+    
+
       return {
-        message: 'Login successful',
-        token : token,
-        user:userWithoutPassword
-      }
+        message: "Login successfull",
+        user: { ...userWithoutPassword, token },
+      };
       // const decodePassword = await bcrypt.compare(password)
   }
 
