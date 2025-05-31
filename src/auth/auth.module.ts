@@ -19,21 +19,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     TypeOrmModule.forFeature([pending_user, otp, User, blockListTokenEntity]),
     PassportModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        const jwtSecret = configService.get<string>('JWT_SECRET');
-        const jwtExpireTime = configService.get<string>('JWT_EXPIRE_TIME');
-  
+      useFactory: async () => {
         return {
-          secret: jwtSecret,
+          secret: 'your_jwt_secret', 
           signOptions: {
-            expiresIn: jwtExpireTime,
+            expiresIn: '1d', 
           },
         };
       },
     }),
   ],
+
+
+
   
   providers: [AuthService, JwtStrategy, otpService, TokenBlocklistService],
   controllers: [AuthController],
