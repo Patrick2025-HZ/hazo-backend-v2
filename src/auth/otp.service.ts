@@ -37,7 +37,7 @@ export class otpService {
     return otpRecord;
   }
 
-  async verifyOTP(email: string, otp: string): Promise<string> {
+  async verifyOTP(email: string, otp: string): Promise<any> {
     const userExists = await this.pendingUser.findOne({ where: { email } });
   
     if (!userExists) {
@@ -77,7 +77,10 @@ export class otpService {
 
     await this.otp.delete({ id: otpDetails.id });
   
-    throw new success("OTP verified successfully", {...newUser, token})
+    return {
+      message: "OTP verified successfully",
+      user: { ...newUser, token },
+    };
 
   }
   
