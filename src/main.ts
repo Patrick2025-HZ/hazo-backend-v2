@@ -23,7 +23,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addServer(
       apiBaseURL
-        ? 'https://hazo-dev.up.railway.app/'
+        ? 'https://hazo-dev-v2.up.railway.app/'
         : 'http://localhost:3000/',
     )
     .addTag('Your API Tag')
