@@ -30,7 +30,6 @@ export class UserServices {
       throw new NotFoundException('User details not found');
     }
 
-
     return new success('User fetch successfully', { userDetails });
   }
   async updateUserProfile(
@@ -41,37 +40,34 @@ export class UserServices {
     if (!isUUID(id)) {
       throw new NotFoundException('User does not exist');
     }
-  
+
     const existingUser = await this.user.findOne({ where: { id } });
     if (!existingUser) {
       throw new NotFoundException('User does not exist');
     }
-  
+
     let profilePicture: string | undefined;
     if (file) {
       const upload = await this.cloudinary.uploadImage(file);
       profilePicture = upload.secure_url;
       console.log('Cloudinary URL:', profilePicture);
     }
-  
+
     const updatePayload = {
       ...data,
       ...(profilePicture ? { profilePicUrl: profilePicture } : {}),
     };
     console.log('Update payload:', updatePayload);
-  
+
     const result = await this.user.update(id, updatePayload);
     console.log('Update result:', result);
-  
+
     // Fetch the updated user to verify
     const updatedUser = await this.user.findOne({ where: { id } });
-    console.log('Updated user:', updatedUser);
-  
 
-  
     return {
       message: 'User updated successfully',
-      user :updatedUser
+      user: updatedUser,
     };
   }
 

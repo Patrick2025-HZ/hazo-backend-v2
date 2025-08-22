@@ -17,18 +17,17 @@ if (!global.crypto.randomUUID) {
   global.crypto.randomUUID = nodeCrypto.randomUUID.bind(nodeCrypto);
 }
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // makes ConfigService available globally
+      isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const dbName = configService.get<string>('DB_NAME');
-        console.log('Connecting to database:', dbName); 
+        console.log('Connecting to database:', dbName);
         return {
           type: 'postgres',
           host: configService.get<string>('DB_HOST'),
@@ -41,7 +40,6 @@ if (!global.crypto.randomUUID) {
           ssl: false,
         };
       },
-      
     }),
     AuthModule,
     UserModule,

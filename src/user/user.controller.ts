@@ -68,13 +68,12 @@ export class UserController {
   ) {
     return this.userServices.updateUserProfile(id, updateUserDto, file);
   }
-  
 
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get protected data' })
   @ApiBearerAuth('access-token')
   @Delete('delete')
-  async deleteUser (@Req() req:any){
-    return this.userServices.deleteUser(req.user)
+  async deleteUser(@Req() req: any) {
+    return this.userServices.deleteUser(req.user);
   }
 }

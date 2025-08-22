@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { FollowerEntity } from '../follower/entity/follower.entity';
 
 @Entity()
 export class User {
@@ -58,5 +59,11 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[]
+
+  @OneToMany(()=> FollowerEntity, (el)=> el.followedUser)
+  followers:FollowerEntity[]
+
+  @OneToMany(()=> FollowerEntity, (el)=> el.follower)
+  following:FollowerEntity[]
 
 }
