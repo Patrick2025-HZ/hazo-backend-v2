@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { is_reel } from '../enums/is_reel.status.enum';
 
 @Entity()
 export class Post {

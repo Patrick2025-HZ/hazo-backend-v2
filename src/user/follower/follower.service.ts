@@ -75,10 +75,22 @@ export class FollowerService {
       relations: ['follower'],
     });
 
+    console.log(following, 'following');
+
+    const mappedData = following.map((f) => ({
+      id: f.id,
+      followingUserId: f.follower.id,
+      email: f.follower.email,
+      fullName: f.follower.fullName,
+      userName: f.follower.userName,
+      createdAt: f.createdAt,
+      profile: f.follower.profilePicUrl,
+    }));
+
     return {
       status: true,
       message: 'Successfully fetch all the following',
-      following,
+      data: mappedData,
     };
   }
 
@@ -91,11 +103,20 @@ export class FollowerService {
       where: { follower: { id: userDetails?.id } },
       relations: ['followedUser'],
     });
+    const mappedData = following.map((f) => ({
+      id: f.id,
+      followedUserId: f.followedUser.id,
+      email: f.followedUser.email,
+      fullName: f.followedUser.fullName,
+      userName: f.followedUser.userName,
+      profile: f.followedUser.profilePicUrl,
+      createdAt: f.createdAt,
+    }));
 
     return {
       status: true,
       message: 'Successfully fetch all the followers',
-      following,
+      data: mappedData,
     };
   }
 
@@ -116,9 +137,7 @@ export class FollowerService {
     return {
       status: true,
       message: 'Successfully fetch all the followers',
-      data:{followers: followerCount,
-        following: followingCount,}
-      
+      data: { followers: followingCount, following: followerCount },
     };
   }
 }
