@@ -42,7 +42,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update user profile' })
   @ApiBearerAuth('access-token')
-  @Put('updateUser/:id')
+  @Post('updateUser')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('profile'))
   @ApiBody({
@@ -62,11 +62,39 @@ export class UserController {
     },
   })
   updatedProfile(
-    @Param('id', new ParseUUIDPipe()) id: string,
     @UploadedFile() file: Express.Multer.File,
     @Body() updateUserDto: updateUserDTO,
+    @currentUser() user: any,
   ) {
-    return this.userServices.updateUserProfile(id, updateUserDto, file);
+    return this.userServices.updateUserProfile(
+      user?.userId,
+      updateUserDto,
+      file,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update user profile (JSON only)' })
+  @ApiBearerAuth('access-token')
+  @Post('updateUserv2')
+  @ApiConsumes('application/json') // 👈 pure JSON
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        userName: { type: 'string', example: 'Danyal Khursheed' },
+        email: { type: 'string', example: 'john@example.com' },
+        fullName: { type: 'string', example: 'Danyal Khursheed' },
+        phoneNumber: { type: 'string', example: '923498030357' },
+        dob: { type: 'string', example: '2024-12-12' },
+      },
+    },
+  })
+  async updateUserV2(
+    @Body() updateUserDTO: updateUserDTO,
+    @currentUser() user: any,
+  ) {
+    return this.userServices.updateUserProfileV2(user?.userId, updateUserDTO);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -37,7 +37,8 @@ if (!global.crypto.randomUUID) {
           password: configService.get<string>('DB_PASSWORD'),
           database: dbName,
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: true,
+          synchronize: false,
+          migrationsRun: true,
           ssl: false,
         };
       },

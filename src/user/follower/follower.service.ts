@@ -8,6 +8,7 @@ import { User } from '../entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FollowerEntity } from './entity/follower.entity';
 import { success } from 'src/common/exception/success.exception';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class FollowerService {
@@ -23,14 +24,20 @@ export class FollowerService {
       throw new BadRequestException('Follower id is requried');
     }
 
-    if (!user) {
-      throw new BadRequestException('UserId is requried');
+    if (!isUUID(followerId)) {
+      throw new BadRequestException('Follower id must be a valid UUID');
+    }
+    if (!user?.userId) {
+      throw new BadRequestException('User id is required');
     }
 
     const userDetails = await this.User.findOne({ where: { id: user.userId } });
     const followerDetails = await this.User.findOne({
       where: { id: followerId },
     });
+    if (!followerDetails) {
+      throw new NotFoundException('Follower user not found');
+    }
 
     if (userDetails === followerId) {
       throw new BadRequestException('You cannot follow yourself');
@@ -75,8 +82,6 @@ export class FollowerService {
       relations: ['follower'],
     });
 
-    console.log(following, 'following');
-
     const mappedData = following.map((f) => ({
       id: f.id,
       followingUserId: f.follower.id,
@@ -103,6 +108,8 @@ export class FollowerService {
       where: { follower: { id: userDetails?.id } },
       relations: ['followedUser'],
     });
+    console.log(following, 'following');
+
     const mappedData = following.map((f) => ({
       id: f.id,
       followedUserId: f.followedUser.id,

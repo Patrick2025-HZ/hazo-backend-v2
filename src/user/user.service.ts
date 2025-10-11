@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -35,40 +36,96 @@ export class UserServices {
   async updateUserProfile(
     id: string,
     data: updateUserDTO,
-    file: Express.Multer.File,
+    file?: Express.Multer.File,
   ) {
+    // Validate UUID
     if (!isUUID(id)) {
-      throw new NotFoundException('User does not exist');
+      throw new NotFoundException('Invalid user ID format');
     }
 
+    // Check if user exists
     const existingUser = await this.user.findOne({ where: { id } });
     if (!existingUser) {
       throw new NotFoundException('User does not exist');
     }
 
+    // Handle file upload
     let profilePicture: string | undefined;
     if (file) {
-      const upload = await this.cloudinary.uploadImage(file);
-      profilePicture = upload.secure_url;
-      console.log('Cloudinary URL:', profilePicture);
+      try {
+        const upload = await this.cloudinary.uploadImage(file);
+        profilePicture = upload.secure_url;
+      } catch (error) {
+        throw new BadRequestException('Failed to upload profile picture');
+      }
     }
 
-    const updatePayload = {
-      ...data,
-      ...(profilePicture ? { profilePicUrl: profilePicture } : {}),
-    };
-    console.log('Update payload:', updatePayload);
+    // Build update payload - only include provided fields
+    const updatePayload: Partial<User> = {};
 
-    const result = await this.user.update(id, updatePayload);
-    console.log('Update result:', result);
+    // Only update fields that are provided in the DTO
+    if (data.fullName !== undefined) updatePayload.fullName = data.fullName;
+    if (data.userName !== undefined) updatePayload.userName = data.userName;
+    if (data.dob !== undefined) updatePayload.dob = data.dob;
+    if (data.phoneNumber !== undefined)
+      updatePayload.phoneNumber = data.phoneNumber;
 
-    // Fetch the updated user to verify
-    const updatedUser = await this.user.findOne({ where: { id } });
+    // Add profile picture if uploaded
+    if (profilePicture) {
+      updatePayload.profilePicUrl = profilePicture;
+    }
 
-    return {
-      message: 'User updated successfully',
-      user: updatedUser,
-    };
+    // If no fields to update, return early
+    if (Object.keys(updatePayload).length === 0) {
+      return {
+        message: 'No changes detected',
+        user: existingUser,
+      };
+    }
+
+    try {
+      // Use update method for better performance
+      await this.user.update(id, updatePayload);
+
+      // Fetch updated user
+      const updatedUser = await this.user.findOne({
+        where: { id },
+        select: [
+          'id',
+          'email',
+          'fullName',
+          'userName',
+          'dob',
+          'profilePicUrl',
+          'phoneNumber',
+          'isActive',
+          'createdAt',
+          'updatedAt',
+        ],
+      });
+
+      return {
+        message: 'User updated successfully',
+        user: updatedUser,
+      };
+    } catch (error) {
+      // Handle unique constraint violations
+
+      throw new InternalServerErrorException('Failed to update user');
+    }
+  }
+
+  async updateUserProfileV2(userId: string, data: updateUserDTO) {
+    const existingUser = await this.user.findOne({ where: { id: userId } });
+
+    if (!existingUser) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    Object.assign(existingUser, data);
+
+    // Save and return updated entity
+    return await this.user.save(existingUser);
   }
 
   async deleteUser(user: any) {

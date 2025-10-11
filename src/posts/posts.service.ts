@@ -26,25 +26,27 @@ export class PostsService {
   ) {}
   async create(createPostDto: CreatePostDto, file: Express.Multer.File, req) {
     const userExists = await this.user.findOne({ where: { id: req.userId } });
-
     if (!userExists) {
-      throw new BadRequestException('User does not founded');
+      throw new BadRequestException('User not found');
     }
+
+    let mediaUrl: string | null = null;
 
     if (file) {
       const upload = await this.cloudinary.uploadImage(file);
-      const profilePicture = upload.secure_url;
-
-      const newPost = await this.post.create({
-        caption: createPostDto.caption,
-        is_reel: createPostDto.is_reel,
-        media_url: profilePicture,
-        // user: userExists,
-      });
-
-      const post = await this.post.save(newPost);
-      return new success('User fetch successfully', { post });
+      mediaUrl = upload.secure_url;
     }
+
+    const newPost = this.post.create({
+      caption: createPostDto.caption,
+      is_reel: createPostDto.is_reel,
+      media_url: mediaUrl || null,
+      user: userExists,
+    });
+
+    const post = await this.post.save(newPost);
+
+    return new success('Post created successfully', { post });
   }
 
   async findAllReels(req) {
@@ -70,16 +72,14 @@ export class PostsService {
 
   async update(id: string, caption: string) {
     const post = await this.post.findOne({ where: { id } });
-  
+
     if (!post) {
       throw new NotFoundException('No Post Found');
     }
-  
-  await this.post.update({ id }, { caption: caption });
-  
 
+    await this.post.update({ id }, { caption: caption });
   }
-  
+
   async findOne(id: string) {
     const postDetails = await this.post.findOne({ where: { id } });
     if (!postDetails) {

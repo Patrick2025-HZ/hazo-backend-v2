@@ -1,43 +1,34 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class updateUserDTO {
-  @ApiProperty({ required: false })
-  @IsString()
+  @ApiPropertyOptional({ example: 'Danyal Khursheed' })
   @IsOptional()
+  @IsString()
   userName?: string;
 
-
-  @IsEmail()
-
-  @IsNotEmpty({ message: 'email name is required' })
+  @ApiPropertyOptional({ example: 'john@example.com' })
+  @IsOptional()
+  @IsEmail({}, { message: 'Must be a valid email' })
   email?: string;
 
-
+  @ApiPropertyOptional({ example: 'Danyal Khursheed' })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty({ message: 'Full name is required' })
   fullName?: string;
 
-
+  @ApiPropertyOptional({ example: '923498030357' })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty({message:"phone number is requried"})
   phoneNumber?: string;
 
-  @IsString()
+  @ApiPropertyOptional({ example: '2024-12-12' })
   @IsOptional()
+  @IsString()
   dob?: string;
 
-  // 👇 This is the important part for file upload
+  // For profile pic later
+  // @ApiPropertyOptional({ type: 'string', format: 'binary' })
   // @IsOptional()
-  // @ApiProperty({
-  //   type: 'string',
-  //   format: 'binary',
-  //   required: false,
-  // })
   // profile?: any;
 }

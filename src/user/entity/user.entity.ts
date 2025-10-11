@@ -1,12 +1,12 @@
-import { Post } from 'src/posts/entities/post.entity';
+import { Post } from '../../posts/entities/post.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 import { FollowerEntity } from '../follower/entity/follower.entity';
 
@@ -15,8 +15,13 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Index({ unique: true })
   @Column()
   email: string;
+
+  @Index({ unique: true })
+  @Column({ nullable: true })
+  phoneNumber: string;
 
   @Column()
   password: string;
@@ -24,30 +29,23 @@ export class User {
   @Column({ nullable: true })
   fullName: string;
 
-
-
+  @Column({ nullable: true })
+  userName: string;
 
   @Column({ nullable: true })
-  userName:string;
+  dob: string;
 
   @Column({ nullable: true })
-  phoneNumber:string;
+  profilePicUrl: string;
 
-  @Column({ nullable: true })
-  dob:string
-
-  @Column({ nullable: true })
-  profilePicUrl: string; 
-
-  @Column({default:false})
-  isDeleted:boolean
+  @Column({ default: false })
+  isDeleted: boolean;
 
   @Column({ nullable: true })
   deletedAt: Date;
 
   @Column({ default: true, nullable: false })
   isActive: boolean;
-  
 
   @CreateDateColumn()
   createdAt: Date;
@@ -55,15 +53,12 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-
-
   @OneToMany(() => Post, (post) => post.user)
-  posts: Post[]
+  posts: Post[];
 
-  @OneToMany(()=> FollowerEntity, (el)=> el.followedUser)
-  followers:FollowerEntity[]
+  @OneToMany(() => FollowerEntity, (el) => el.followedUser)
+  followers: FollowerEntity[];
 
-  @OneToMany(()=> FollowerEntity, (el)=> el.follower)
-  following:FollowerEntity[]
-
+  @OneToMany(() => FollowerEntity, (el) => el.follower)
+  following: FollowerEntity[];
 }
