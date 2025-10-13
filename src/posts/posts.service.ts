@@ -38,7 +38,7 @@ export class PostsService {
 
     if (files && files.length > 0) {
       const uploadPromises = files.map((file) =>
-        this.cloudinary.uploadImage(file),
+        this.cloudinary.uploadFile(file),
       );
       const uploadResults = await Promise.all(uploadPromises);
 

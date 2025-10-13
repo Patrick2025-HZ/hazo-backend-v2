@@ -53,7 +53,7 @@ export class UserServices {
     let profilePicture: string | undefined;
     if (file) {
       try {
-        const upload = await this.cloudinary.uploadImage(file);
+        const upload = await this.cloudinary.uploadFile(file);
         profilePicture = upload.secure_url;
       } catch (error) {
         throw new BadRequestException('Failed to upload profile picture');
