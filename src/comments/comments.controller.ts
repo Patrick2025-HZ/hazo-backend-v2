@@ -4,6 +4,7 @@ import {
   Param,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -12,7 +13,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApiBearerAuth, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { currentUser } from 'src/decorators/current-user.decorator';
 import { createCommentDTO } from './dto/create-comment';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('comments')
 export class CommentsController {
@@ -23,19 +24,18 @@ export class CommentsController {
   @ApiBearerAuth('access-token')
   @Post('comment/:postId')
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('media_url'))
+  @UseInterceptors(FilesInterceptor('file', 10))
   createComment(
     @Param('postId') id: string,
     @currentUser() user: any,
     @Body() createCommentDTO: createCommentDTO,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
   ) {
-    // console.log(user, 'user id user id');
     return this.commentsService.createComment(
       id,
       user?.userId,
       createCommentDTO,
-      file,
+      files,
     );
   }
 }

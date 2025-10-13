@@ -1,4 +1,5 @@
-import { Post } from 'src/posts/entities/post.entity';
+import { IsOptional } from 'class-validator';
+import { Post } from '../../posts/entities/post.entity';
 import { User } from 'src/user/entity/user.entity';
 import {
   Column,
@@ -7,6 +8,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('comments')
 export class Comment {
@@ -30,4 +32,7 @@ export class Comment {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column({ type: 'jsonb', nullable: true })
+  file: string[] | null;
 }

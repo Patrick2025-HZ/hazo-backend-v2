@@ -24,23 +24,31 @@ export class PostsService {
     @InjectRepository(Post)
     public post: Repository<Post>,
   ) {}
-  async create(createPostDto: CreatePostDto, file: Express.Multer.File, req) {
+  async create(
+    createPostDto: CreatePostDto,
+    files: Express.Multer.File[],
+    req,
+  ) {
     const userExists = await this.user.findOne({ where: { id: req.userId } });
     if (!userExists) {
       throw new BadRequestException('User not found');
     }
 
-    let mediaUrl: string | null = null;
+    let mediaUrls: string[] = [];
 
-    if (file) {
-      const upload = await this.cloudinary.uploadImage(file);
-      mediaUrl = upload.secure_url;
+    if (files && files.length > 0) {
+      const uploadPromises = files.map((file) =>
+        this.cloudinary.uploadImage(file),
+      );
+      const uploadResults = await Promise.all(uploadPromises);
+
+      mediaUrls = uploadResults.map((result) => result.secure_url);
     }
 
     const newPost = this.post.create({
       caption: createPostDto.caption,
       is_reel: createPostDto.is_reel,
-      media_url: mediaUrl || null,
+      file: mediaUrls.length ? mediaUrls : null,
       user: userExists,
     });
 

@@ -6,6 +6,7 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service'; // make s
 import { createCommentDTO } from './dto/create-comment';
 import { Comment } from './entity/comments.entity';
 import { Post } from '../posts/entities/post.entity';
+import { success } from 'src/common/exception/success.exception';
 
 @Injectable()
 export class CommentsService {
@@ -26,25 +27,32 @@ export class CommentsService {
     postId: string,
     userId: string,
     dto: createCommentDTO,
-    file?: Express.Multer.File,
-  ): Promise<void> {
+    files?: Express.Multer.File[],
+  ): Promise<success> {
     const postExists = await this.posts.findOne({ where: { id: postId } });
 
     if (!postExists) {
       throw new NotFoundException('No Post Found');
     }
+    let mediaUrls: string[] = [];
 
-    if (file) {
-      const upload = await this.cloudinary.uploadImage(file);
-      const commentPicture = upload.secure_url;
-      const createComment = await this.comments.create({
-        user: { id: userId } as User,
-        post: { id: postExists?.id } as Post,
-        comment: dto?.comment,
-        // file: file,
-      });
-    } else {
-      return;
+    if (files && files?.length > 0) {
+      const uploadPromises = files.map((file) =>
+        this.cloudinary.uploadImage(file),
+      );
+      const uploadResults = await Promise.all(uploadPromises);
+
+      mediaUrls = uploadResults.map((result) => result.secure_url);
     }
+    const createComment = await this.comments.create({
+      user: { id: userId } as User,
+      post: { id: postExists?.id } as Post,
+      comment: dto?.comment,
+      file: mediaUrls.length ? mediaUrls : null,
+    });
+
+    const comment = await this.comments.save(createComment);
+
+    return new success('Comment added successfully', { comment });
   }
 }

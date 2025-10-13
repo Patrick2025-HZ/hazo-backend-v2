@@ -17,7 +17,7 @@ export class Post {
   caption: string;
 
   @Column({ type: 'jsonb', nullable: true })
-  media_url: string | null;
+  file: string[] | null;
 
   @Column({ type: 'boolean', default: false })
   is_reel: boolean;

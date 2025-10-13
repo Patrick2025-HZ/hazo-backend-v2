@@ -17,12 +17,14 @@ export class CreatePostDto {
   @IsBoolean()
   is_reel: boolean;
 
-
   @IsOptional()
   @ApiProperty({
-    type: 'string',
-    format: 'binary',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
     required: false,
   })
-  media_url?: any;
+  file?: any[];
 }

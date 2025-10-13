@@ -8,10 +8,12 @@ export class createCommentDTO {
 
   @IsOptional()
   @ApiProperty({
-    type: 'string',
-    format: 'binary',
+    type: 'array',
+    items: {
+      type: 'string',
+      format: 'binary',
+    },
     required: false,
-    description: 'Optional media file (image/video)',
   })
-  media_url?: any; // 👈 important: add a property name
+  file?: any[];
 }
