@@ -1,10 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { UUID } from 'crypto';
 
 export class createCommentDTO {
   @ApiPropertyOptional({ example: 'Write something here' })
   @IsString()
   comment: string;
+
+  @IsOptional()
+  @IsUUID()
+  @ApiPropertyOptional({ example: '' })
+  parentCommentId?: UUID;
 
   @IsOptional()
   @ApiProperty({
