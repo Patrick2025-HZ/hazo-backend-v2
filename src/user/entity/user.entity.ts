@@ -9,56 +9,64 @@ import {
   Index,
 } from 'typeorm';
 import { FollowerEntity } from '../follower/entity/follower.entity';
+import { Like } from 'src/posts/entities/like.entity';
 
-@Entity()
+@Entity('user') // ✅ Explicit table name
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Index({ unique: true })
-  @Column()
+  @Column({ type: 'varchar' }) // ✅ Explicit type
   email: string;
 
   @Index({ unique: true })
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true }) // ✅ Explicit type
   phoneNumber: string;
 
-  @Column()
+  @Column({ type: 'varchar' }) // ✅ Explicit type
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true }) // ✅ Explicit type
   fullName: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true }) // ✅ Explicit type
   userName: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true }) // ✅ Explicit type
   dob: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true }) // ✅ Explicit type
   profilePicUrl: string;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false }) // ✅ Explicit type
   isDeleted: boolean;
 
-  @Column({ nullable: true })
+  @Column({ type: 'timestamp', nullable: true }) // ✅ Changed from Date to timestamp
   deletedAt: Date;
 
-  @Column({ default: true, nullable: false })
+  @Column({ type: 'boolean', default: true }) // ✅ Explicit type, removed nullable: false (redundant with default)
   isActive: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' }) // ✅ Explicit type
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp' }) // ✅ Explicit type
   updatedAt: Date;
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 
-  @OneToMany(() => FollowerEntity, (el) => el.followedUser)
+  @OneToMany(() => Like, (like) => like.user)
+  like: Like[];
+
+  @OneToMany(() => FollowerEntity, (el) => el.followedUser, {
+    onDelete: 'CASCADE',
+  })
   followers: FollowerEntity[];
 
-  @OneToMany(() => FollowerEntity, (el) => el.follower)
+  @OneToMany(() => FollowerEntity, (el) => el.follower, {
+    onDelete: 'CASCADE',
+  })
   following: FollowerEntity[];
 }

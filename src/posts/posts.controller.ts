@@ -70,4 +70,13 @@ export class PostsController {
   remove(@Param('id') id: string) {
     return this.postsService.remove(id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Create post with multiple files' })
+  @ApiBearerAuth('access-token')
+  @Get('/like/:postId')
+  LikeUnLike(@Req() req: any, @Param('postId') id: string) {
+    console.log(req.user?.userId, 'req.user');
+    return this.postsService.LikeUnLike(req.user?.userId, id);
+  }
 }

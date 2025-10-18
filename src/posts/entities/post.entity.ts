@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Like } from './like.entity';
 
 @Entity()
 export class Post {
@@ -20,6 +21,9 @@ export class Post {
 
   @Column({ type: 'jsonb', nullable: true })
   file: string[] | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  abc: string[] | null;
 
   @Column({ type: 'boolean', default: false })
   is_reel: boolean;
@@ -35,4 +39,7 @@ export class Post {
 
   @OneToMany(() => Comment, (comment) => comment.post, { onDelete: 'CASCADE' })
   comments: Comment;
+
+  @OneToMany(() => Like, (like) => like.post, { onDelete: 'CASCADE' })
+  like: Like[];
 }
