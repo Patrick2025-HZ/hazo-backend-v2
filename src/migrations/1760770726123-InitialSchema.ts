@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class InitialSchema1760768797229 implements MigrationInterface {
-    name = 'InitialSchema1760768797229'
+export class InitialSchema1760770726123 implements MigrationInterface {
+    name = 'InitialSchema1760770726123'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "email" character varying NOT NULL, "password" character varying NOT NULL, CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
@@ -10,7 +10,7 @@ export class InitialSchema1760768797229 implements MigrationInterface {
         await queryRunner.query(`CREATE TABLE "block_list_token_entity" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "token" character varying NOT NULL, "expires_at" TIMESTAMP NOT NULL, CONSTRAINT "PK_63d31f0bf41d2b5e0bcdf5a5dff" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "comments" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "comment" character varying NOT NULL, "isLiked" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "file" jsonb, "userId" uuid, "postId" uuid, "parentCommentId" uuid, CONSTRAINT "PK_8bf68bc960f2b69e818bdb90dcb" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "like" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, "postId" uuid, CONSTRAINT "PK_eff3e46d24d416b52a7e0ae4159" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "post" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "caption" character varying NOT NULL, "file" jsonb, "is_reel" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, CONSTRAINT "PK_be5fda3aac270b134ff9c21cdee" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "post" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "caption" character varying NOT NULL, "file" jsonb, "abc" jsonb, "is_reel" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, CONSTRAINT "PK_be5fda3aac270b134ff9c21cdee" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "follower_entity" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "followerId" uuid, "followedUserId" uuid, CONSTRAINT "PK_5b349bc3c18fed0ff8c9fab91ee" PRIMARY KEY ("id"))`);
         await queryRunner.query(`ALTER TABLE "user" ADD "phoneNumber" character varying`);
         await queryRunner.query(`ALTER TABLE "user" ADD "fullName" character varying`);
@@ -18,7 +18,6 @@ export class InitialSchema1760768797229 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "user" ADD "dob" character varying`);
         await queryRunner.query(`ALTER TABLE "user" ADD "profilePicUrl" character varying`);
         await queryRunner.query(`ALTER TABLE "user" ADD "isDeleted" boolean NOT NULL DEFAULT false`);
-        await queryRunner.query(`ALTER TABLE "user" ADD "address" character varying`);
         await queryRunner.query(`ALTER TABLE "user" ADD "deletedAt" TIMESTAMP`);
         await queryRunner.query(`ALTER TABLE "user" ADD "isActive" boolean NOT NULL DEFAULT true`);
         await queryRunner.query(`ALTER TABLE "user" ADD "createdAt" TIMESTAMP NOT NULL DEFAULT now()`);
@@ -52,7 +51,6 @@ export class InitialSchema1760768797229 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "createdAt"`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "isActive"`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "deletedAt"`);
-        await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "address"`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "isDeleted"`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "profilePicUrl"`);
         await queryRunner.query(`ALTER TABLE "user" DROP COLUMN "dob"`);
